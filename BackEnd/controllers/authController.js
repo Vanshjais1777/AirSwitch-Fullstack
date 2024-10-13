@@ -40,8 +40,8 @@ exports.resetPassword = async (req, res) => {
 
     // Ensure both stored and entered OTP are strings
     const enteredOtp = otp.toString();
-    const storedOtp = user.otp ? user.otp.toString() : '';
-
+    const storedOtp = user.otp ? user.otp.toString() : 'jhgh';
+    console.log(user.otp + "wjdjw");
     // Check if OTP is expired before comparing
     if (user.otpExpires < Date.now()) {
         return res.status(400).json({ message: 'OTP expired' });
