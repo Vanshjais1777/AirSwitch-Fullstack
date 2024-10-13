@@ -33,7 +33,7 @@ const ForgetPassword = () => {
     const handleResetPassword = async () => {
         try {
             // Call backend to verify OTP and reset password
-            const response = await fetch("/api/reset-password", {
+            const response = await fetch("http://localhost:5000/api/auth/send-otp", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, otp, newPassword })
