@@ -40,20 +40,40 @@ const SignUp = () => {
     };
 
     // Handle Signup form submission
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
 
+        // First validate the form
         if (!validateForm()) {
-            return;
+            return;  // If form is invalid, don't proceed
         }
 
-        // Perform signup logic (can add API call if necessary)
-        localStorage.setItem('userSignedUp', 'true');
-        setIsFirstTime(false); // Set first-time flag to false
-        handleLogin(); // Call handleLogin from AuthContext to set the user as logged in
+        // Now send the request to the backend
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, email, password }),
+            });
 
-        navigate('/masters'); // Redirect to masters page after signup
+            const data = await response.json();
+
+            if (response.ok) {
+                handleLogin(data.token);  // Store the token and log the user in
+                localStorage.setItem('userSignedUp', 'true');  // Optional
+                setIsFirstTime(false);  // Set first-time flag to false
+                navigate('/masters');  // Redirect to masters page
+            } else {
+                setErrors({ general: data.message });
+            }
+        } catch (error) {
+            console.error('Signup failed', error);
+            setErrors({ general: 'Something went wrong. Please try again later.' });
+        }
     };
+
 
     // Separate function for Google Sign-In
     const handleGoogleSignIn = (e) => {
