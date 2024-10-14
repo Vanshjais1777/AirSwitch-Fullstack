@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Master = require('../models/masterModel');
 const bcrypt = require('bcryptjs');
 const { sendOtpToEmail } = require('../services/emailService');
 const jwt = require('jsonwebtoken')
@@ -8,8 +9,8 @@ exports.signup = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
+        const user = await User.findOne({ email });
+        if (user) {
             return res.status(400).json({ message: "User already exists" });
         }
 
@@ -31,7 +32,7 @@ exports.signup = async (req, res) => {
         res.status(201).json({
             message: 'User registered successfully',
             token,
-            user: { id: newUser._id, username: newUser.username, email: newUser.email }
+            user: { id: newUser._id, username: newUser.username, email: newUser.email, password: newUser.password }
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -57,7 +58,7 @@ exports.login = async () => {
 
         res.json({
             token,
-            user: { id: user._id, username: user.username, email: user.email },
+            user: { username: user.username, email: user.email },
         });
     } catch (error) {
         res.status(500).json({ message: "Server Error" });
@@ -130,4 +131,29 @@ exports.resetPassword = async (req, res) => {
     }
 
     res.status(200).json({ message: 'Password reset successful' });
+};
+
+exports.addMaster = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        const master = await Master.findOne({ id });
+
+        if (!master) {
+            return res.status(400).json({ message: "Master doesn't Exists" })
+        }
+
+        res.status(200).json({
+            message: 'Master found',
+            master: {
+                id: master.id,
+                name: master.name,
+                location: master.location,
+                boards: master.boards
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching master:', error);
+        res.status(500).json({ message: 'Server error while fetching master' });
+    }
 };
