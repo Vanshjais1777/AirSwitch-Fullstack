@@ -17,6 +17,7 @@ import { AuthProvider } from './context/AuthContext';
 import Masters from './pages/Masters';
 import Boards from './pages/Boards';
 import Switches from './pages/Switches';
+import AdminPannel from './pages/AdminPannel';
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/masters" element={<Masters />} />
           <Route path="/boards" element={<Boards />} />
           <Route path="/switches" element={<Switches />} />
+          <Route path="/admin" element={<AdminPannel />} />
         </Routes>
       </Router>
     </AuthProvider>

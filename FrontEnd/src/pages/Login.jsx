@@ -15,41 +15,32 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        const response = await fetch('http://localhost:5000/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            localStorage.setItem('token', data.token);
-            navigate('/masters');
-        }
-        else {
-            setError('Invalid email or password');
-        }
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-        // Validate credentials
-        if (email === validEmail && password === validPassword) {
-            // Store login status in localStorage
-            localStorage.setItem('isLoggedIn', 'true');
+            const data = await response.json();
 
-            // Navigate to the masters page
-            navigate('/masters');
-        } else {
-            // Show error message
-            setError('Invalid email or password');
-        }
-
-        if (!isLoggedIn) {
-            navigate('/login');  // Redirect to login if not logged in
-        } else {
-            // Proceed with showing the grid or signup page logic
-            setVisibleGrid(true);
+            if (response.ok) {
+                // Store token and login status
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('isLoggedIn', 'true');
+                navigate('/masters');  // Redirect to masters page after successful login
+            } else {
+                // Show error message from the server response
+                setError(data.message || 'Login failed. Please try again.');
+            }
+        } catch (error) {
+            // Catch any errors that occur during fetch
+            setError('An error occurred while logging in. Please try again later.');
         }
     };
+
 
     return (
         <div className="h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-purple-500 to-red-500">

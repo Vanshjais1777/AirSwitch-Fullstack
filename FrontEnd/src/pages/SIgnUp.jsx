@@ -34,7 +34,6 @@ const SignUp = () => {
             formErrors.password = 'Password must be at least 6 characters';
             isValid = false;
         }
-
         setErrors(formErrors);
         return isValid;
     };

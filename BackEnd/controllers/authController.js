@@ -5,6 +5,7 @@ const { sendOtpToEmail } = require('../services/emailService');
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
 
+// User SignUp controller logic
 exports.signup = async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -39,7 +40,8 @@ exports.signup = async (req, res) => {
     }
 };
 
-exports.login = async () => {
+// User Login controller logic
+exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -48,12 +50,18 @@ exports.login = async () => {
             return res.status(400).json({ message: "User does not exist" });
         }
 
+        // Log the password comparison
+        console.log('User Password Hash:', user.password);
+        console.log('Entered Password:', password);
+
         const isMatch = await bcrypt.compare(password, user.password);
+        console.log('Passwords Match:', isMatch);
+
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        //Create JWT token
+        // Create JWT token
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
 
         res.json({
@@ -61,11 +69,12 @@ exports.login = async () => {
             user: { username: user.username, email: user.email },
         });
     } catch (error) {
+        console.error('Login Error:', error);
         res.status(500).json({ message: "Server Error" });
     }
-}
+};
 
-// Send OTP to user's email
+// Send OTP to user's email controller logic
 exports.sendOtp = async (req, res) => {
     const { email } = req.body;
 
@@ -91,7 +100,7 @@ exports.sendOtp = async (req, res) => {
     }
 };
 
-// Reset password after OTP verification
+// Reset user password after OTP verification
 exports.resetPassword = async (req, res) => {
     const { email, otp, newPassword } = req.body;
 
@@ -133,6 +142,7 @@ exports.resetPassword = async (req, res) => {
     res.status(200).json({ message: 'Password reset successful' });
 };
 
+// Add Master to Master page by user controller logic
 exports.addMaster = async (req, res) => {
     const { id } = req.body;
 
@@ -140,7 +150,9 @@ exports.addMaster = async (req, res) => {
         const master = await Master.findOne({ id });
 
         if (!master) {
-            return res.status(400).json({ message: "Master doesn't Exists" })
+            return res.status(400).json({
+                message: "Master with Entered ID doesn't Exists"
+            });
         }
 
         res.status(200).json({
@@ -155,5 +167,25 @@ exports.addMaster = async (req, res) => {
     } catch (error) {
         console.error('Error fetching master:', error);
         res.status(500).json({ message: 'Server error while fetching master' });
+    }
+};
+
+// Register Master in DataBase by admin contoller
+exports.registerMaster = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        // Check for existing master
+        const existingMaster = await Master.findOne({ id });
+        if(existingMaster){
+            return res.status(400).json({message: "Master already exists"});
+        }
+
+        // Create a new master
+        const master = new Master({
+            id,
+        })
+    } catch (error) {
+
     }
 };
