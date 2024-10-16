@@ -9,17 +9,17 @@ const AdminPannel = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('', {
+            const response = await fetch('http://localhost:5000/api/auth/register-master', {
                 method: 'POST',
-                headers: {  'Content-Type': 'application/json' },
-                body: JSON.stringify({masterId})
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ masterId })
             });
 
             const result = await response.json();
 
-            
+
         } catch (error) {
-            
+
         }
     }
 

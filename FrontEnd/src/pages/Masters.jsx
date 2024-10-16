@@ -21,7 +21,7 @@ const Masters = () => {
             const response = await fetch('http://localhost:5000/api/auth/add-master', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(masterIdToCheck),
+                body: JSON.stringify(masterIdToCheck,),
             });
 
             const result = await response.json();

@@ -74,7 +74,7 @@ exports.login = async (req, res) => {
     }
 };
 
-// Send OTP to user's email controller logic
+// Send OTP to user's email, controller logic
 exports.sendOtp = async (req, res) => {
     const { email } = req.body;
 
@@ -100,7 +100,7 @@ exports.sendOtp = async (req, res) => {
     }
 };
 
-// Reset user password after OTP verification
+// Reset user password after OTP verification, controller logic
 exports.resetPassword = async (req, res) => {
     const { email, otp, newPassword } = req.body;
 
@@ -142,12 +142,13 @@ exports.resetPassword = async (req, res) => {
     res.status(200).json({ message: 'Password reset successful' });
 };
 
-// Add Master to Master page by user controller logic
+// Add Master to Master page by user, controller logic
 exports.addMaster = async (req, res) => {
-    const { id } = req.body;
+    const { id, name, email } = req.body;
 
     try {
-        const master = await Master.findOne({ id });
+        // Check if the master with the entered ID exists
+        let master = await Master.findOne({ id });
 
         if (!master) {
             return res.status(400).json({
@@ -155,14 +156,23 @@ exports.addMaster = async (req, res) => {
             });
         }
 
-        res.status(200).json({
-            message: 'Master found',
-            master: {
-                id: master.id,
-                name: master.name,
-                location: master.location,
-                boards: master.boards
-            }
+        // if exists then Update name in master model
+        master.name = name;
+        await master.save();
+
+        // Update the user masterid in user model
+        let user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.masterid = id;
+        await user.save();
+
+        return res.status(200).json({
+            message: 'Master name updated and user associated successfully',
+            master,
+            user
         });
     } catch (error) {
         console.error('Error fetching master:', error);
@@ -170,22 +180,25 @@ exports.addMaster = async (req, res) => {
     }
 };
 
-// Register Master in DataBase by admin contoller
+// Register Master in DataBase by admin, controller logic
 exports.registerMaster = async (req, res) => {
     const { id } = req.body;
 
     try {
         // Check for existing master
         const existingMaster = await Master.findOne({ id });
-        if(existingMaster){
-            return res.status(400).json({message: "Master already exists"});
+        if (existingMaster) {
+            return res.status(400).json({ message: "Master already exists with entered ID" });
         }
 
         // Create a new master
         const master = new Master({
             id,
-        })
-    } catch (error) {
+        });
 
+        await master.save();
+        res.status(200).json({ message: 'Master with entered ID added successfully', master })
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding master', error: error.message });
     }
 };
