@@ -51,11 +51,11 @@ exports.login = async (req, res) => {
         }
 
         // Log the password comparison
-        console.log('User Password Hash:', user.password);
-        console.log('Entered Password:', password);
+        // console.log('User Password Hash:', user.password);
+        // console.log('Entered Password:', password);
 
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log('Passwords Match:', isMatch);
+        // console.log('Passwords Match:', isMatch);
 
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid password" });
@@ -113,7 +113,7 @@ exports.resetPassword = async (req, res) => {
     // Ensure both stored and entered OTP are strings
     const enteredOtp = otp.toString();
     const storedOtp = user.otp ? user.otp.toString() : 'jhgh';
-    console.log(user.otp + "wjdjw");
+    // console.log(user.otp);
     // Check if OTP is expired before comparing
     if (user.otpExpires < Date.now()) {
         return res.status(400).json({ message: 'OTP expired' });

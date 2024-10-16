@@ -4,6 +4,7 @@ import HamburgerMenu from '../components/HamburgerMenu';
 const AdminPannel = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);  // Modal visibility
     const [masterId, setMasterId] = useState('');
+    const [message, setMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -12,16 +13,25 @@ const AdminPannel = () => {
             const response = await fetch('http://localhost:5000/api/auth/register-master', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ masterId })
+                body: JSON.stringify({ id: masterId })  // Make sure to match the field with the backend API
             });
 
             const result = await response.json();
 
-
+            if (response.status === 200) {
+                setMessage('Master registered successfully!');
+            } else {
+                setMessage(result.message);  // Show the server message, like "Master already exists"
+            }
         } catch (error) {
-
+            console.error('Error adding master', error);
+            setMessage('Server error: ' + error.toString());
         }
+
+        // Clear the masterId field regardless of success or error
+        setMasterId('');
     }
+
 
     return (
         <div className='bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 flex flex-col min-h-screen'>
@@ -52,6 +62,7 @@ const AdminPannel = () => {
                                 onChange={(e) => setMasterId(e.target.value)}
                                 required
                             />
+                            <p className='text-red-500'>{message}</p>
                             <button type="submit" className="bg-gradient-to-r from-purple-500 to-red-500 text-white p-2 rounded">Submit</button>
                         </form>
                     </div>
