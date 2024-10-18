@@ -3,7 +3,7 @@ const Master = require('../models/masterModel');
 const bcrypt = require('bcryptjs');
 const { sendOtpToEmail } = require('../services/emailService');
 const jwt = require('jsonwebtoken')
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // User SignUp controller logic
 exports.signup = async (req, res) => {
@@ -15,11 +15,11 @@ exports.signup = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        //Hash Password
+        // Hash Password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        //Create new User
+        // Create new User
         const newUser = new User({
             username,
             email,
@@ -27,18 +27,25 @@ exports.signup = async (req, res) => {
         });
 
         await newUser.save();
+
         // Create JWT token
+        if (!JWT_SECRET) {
+            throw new Error("JWT secret not defined");
+        }
+
         const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
 
-        res.status(201).json({
+        res.status(200).json({
             message: 'User registered successfully',
             token,
-            user: { id: newUser._id, username: newUser.username, email: newUser.email, password: newUser.password }
+            user: { id: newUser._id, username: newUser.username, email: newUser.email }
         });
     } catch (error) {
+        console.log("Error during signup:", error);  // Log the actual error
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 
 // User Login controller logic
 exports.login = async (req, res) => {
@@ -53,8 +60,7 @@ exports.login = async (req, res) => {
         // Log the password comparison
         // console.log('User Password Hash:', user.password);
         // console.log('Entered Password:', password);
-
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch =  bcrypt.compare(password, user.password);
         // console.log('Passwords Match:', isMatch);
 
         if (!isMatch) {

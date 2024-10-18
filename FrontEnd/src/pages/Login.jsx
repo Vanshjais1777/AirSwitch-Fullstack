@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     const navigate = useNavigate();
 
-    // Mock credentials for validation (You might fetch this data from an API or database)
-    const validEmail = 'user@example.com';
-    const validPassword = 'password123';
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate('/masters');  // Redirect if user is already logged in
+        }
+    }, [isLoggedIn, navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError(''); // Reset any previous errors
 
         try {
             const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -36,11 +42,11 @@ const Login = () => {
                 setError(data.message || 'Login failed. Please try again.');
             }
         } catch (error) {
-            // Catch any errors that occur during fetch
             setError('An error occurred while logging in. Please try again later.');
+        } finally {
+            setLoading(false);
         }
     };
-
 
     return (
         <div className="h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-purple-500 to-red-500">
@@ -57,8 +63,8 @@ const Login = () => {
                     className="w-full p-3 border border-gray-400 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                 />
-                {error && <p className="text-red-500">{error}</p>}
 
                 <input
                     type="password"
@@ -66,16 +72,19 @@ const Login = () => {
                     className="w-full p-3 border border-gray-400 rounded mb-6 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                 />
-                {error && <p className="text-red-500">{error}</p>}
+
+                {error && <p className="text-red-500 mb-4">{error}</p>}
 
                 <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-3 rounded-full font-semibold hover:from-purple-500 hover:to-blue-500 transition-all duration-300"
+                    className={`w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-3 rounded-full font-semibold transition-all duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-purple-500 hover:to-blue-500'
+                        }`}
+                    disabled={loading}
                 >
-                    Login
+                    {loading ? 'Logging in...' : 'Login'}
                 </button>
-
 
                 <div className='flex m-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600'>
                     <Link to="/forgetpassword" className='font-semibold'>
