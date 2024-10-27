@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (isLoggedIn) {
+        const checkLoginStatus = localStorage.getItem('isLoggedIn');
+        if (checkLoginStatus === 'true') {
             navigate('/masters');  // Redirect if user is already logged in
         }
-    }, [isLoggedIn, navigate]);
+    }, [navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -32,14 +31,14 @@ const Login = () => {
 
             const data = await response.json();
 
-            if (response.ok) {
+            if (response.ok && data?.token) {
                 // Store token and login status
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('isLoggedIn', 'true');
                 navigate('/masters');  // Redirect to masters page after successful login
             } else {
                 // Show error message from the server response
-                setError(data.message || 'Login failed. Please try again.');
+                setError(data?.message || 'Login failed. Please try again.');
             }
         } catch (error) {
             setError('An error occurred while logging in. Please try again later.');
@@ -79,8 +78,7 @@ const Login = () => {
 
                 <button
                     type="submit"
-                    className={`w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-3 rounded-full font-semibold transition-all duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-purple-500 hover:to-blue-500'
-                        }`}
+                    className={`w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-3 rounded-full font-semibold transition-all duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-purple-500 hover:to-blue-500'}`}
                     disabled={loading}
                 >
                     {loading ? 'Logging in...' : 'Login'}

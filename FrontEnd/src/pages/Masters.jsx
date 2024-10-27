@@ -15,13 +15,20 @@ const Masters = () => {
     // Handle form submission to check if master exists
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Only need masterId to send to backend
-        const masterIdToCheck = { id: masterId };
+
+        // Only need masterId and masterName to send to backend
+        const masterIdToCheck = { id: masterId, name: masterName };
+
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+
         try {
             const response = await fetch('http://localhost:5000/api/auth/add-master', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(masterIdToCheck,),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`, // Include token in headers
+                },
+                body: JSON.stringify(masterIdToCheck),
             });
 
             const result = await response.json();
@@ -29,7 +36,7 @@ const Masters = () => {
             if (response.status === 200) {
                 // Success: Master found, append it to the masters array
                 setMasters([...masters, { id: masterId, name: masterName }]);
-                setIsModalOpen(false);  // Close modal
+                setIsModalOpen(false); // Close modal
             } else {
                 // Error: Master doesn't exist
                 setMessage(result.message);
@@ -42,7 +49,9 @@ const Masters = () => {
 
         // Clear form inputs after submit
         setMasterId('');
+        setMasterName('');
     };
+
 
     return (
         <div className='bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 h-svh flex flex-col'>

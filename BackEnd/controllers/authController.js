@@ -33,19 +33,18 @@ exports.signup = async (req, res) => {
             throw new Error("JWT secret not defined");
         }
 
-        const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ email: newUser.email }, JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({
             message: 'User registered successfully',
             token,
-            user: { id: newUser._id, username: newUser.username, email: newUser.email }
+            user: { username: newUser.username, email: newUser.email }
         });
     } catch (error) {
         console.log("Error during signup:", error);  // Log the actual error
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 
 // User Login controller logic
 exports.login = async (req, res) => {
@@ -60,7 +59,7 @@ exports.login = async (req, res) => {
         // Log the password comparison
         // console.log('User Password Hash:', user.password);
         // console.log('Entered Password:', password);
-        const isMatch =  bcrypt.compare(password, user.password);
+        const isMatch = bcrypt.compare(password, user.password);
         // console.log('Passwords Match:', isMatch);
 
         if (!isMatch) {
@@ -149,24 +148,36 @@ exports.resetPassword = async (req, res) => {
 };
 
 // Add Master to Master page by user, controller logic
+// Add Master to Master page by user, controller logic
 exports.addMaster = async (req, res) => {
-    const { id, name, email } = req.body;
+    const { id, name } = req.body; // Extract only id and name from request body
+    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
 
     try {
+        // Verify and decode the token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const email = decoded.email; // Get the email from the decoded token
+
+        console.log("Request Body:", req.body);
+
         // Check if the master with the entered ID exists
         let master = await Master.findOne({ id });
 
         if (!master) {
             return res.status(400).json({
-                message: "Master with Entered ID doesn't Exists"
+                message: "Master with Entered ID doesn't Exist"
             });
         }
 
-        // if exists then Update name in master model
+        // If exists then Update name in master model
         master.name = name;
         await master.save();
 
-        // Update the user masterid in user model
+        // Update the user masterId in user model
         let user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -185,6 +196,7 @@ exports.addMaster = async (req, res) => {
         res.status(500).json({ message: 'Server error while fetching master' });
     }
 };
+
 
 // Register Master in DataBase by admin, controller logic
 exports.registerMaster = async (req, res) => {
