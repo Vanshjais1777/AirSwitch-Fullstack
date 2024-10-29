@@ -6,13 +6,25 @@ require('dotenv').config();
 
 const app = express();
 
+const allowedOrigins = [
+    // 'http://localhost:5173',     //Local development
+    'https://air-switch-frontend.vercel.app'  // Vercel frontend
+];
+
 app.use(cors({
-    origin: 'http://localhost:5173'  // Allow requests from this origin
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
 }));
 
 app.use(express.json());
 
-const connectDB = require('./config/db')
+const connectDB = require('./config/db');
 connectDB();
 
 app.use('/api/auth', authRoutes);
