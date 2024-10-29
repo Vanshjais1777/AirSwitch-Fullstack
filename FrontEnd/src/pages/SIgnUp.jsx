@@ -61,7 +61,6 @@ const SignUp = () => {
 
             if (response.ok) {
                 handleLogin(data.token);  // Store the token and log the user in
-                localStorage.setItem('userSignedUp', 'true');  // Optional
                 setIsFirstTime(false);  // Set first-time flag to false
                 navigate('/masters');  // Redirect to masters page
             } else {

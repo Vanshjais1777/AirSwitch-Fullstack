@@ -17,16 +17,10 @@ const Home = () => {
                 setIsFirstTime(false); // Update context after logo is shown
                 localStorage.setItem('isFirstTime', 'false'); // Persist this in localStorage
             }, 2000);
-
             return () => clearTimeout(timer);
         }
+        navigate('/masters')
     }, [showLogo, setIsFirstTime]);
-
-    useEffect(() => {
-        if (isLoggedIn) {
-            navigate('/masters'); // Redirect to Masters if already logged in
-        }
-    }, [isLoggedIn, navigate]);
 
     if (showLogo) {
         return (

@@ -1,5 +1,5 @@
 const express = require('express');
-const { sendOtp, resetPassword, signup, login, addMaster, registerMaster } = require('../controllers/authController');
+const { sendOtp, resetPassword, signup, login, addMaster, registerMaster, fetch_master } = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -20,5 +20,7 @@ router.post('/add-master', addMaster);
 
 // Route to Register master to the backend by admin
 router.post('/register-master', registerMaster);
+
+router.get('/fetch-master',fetch_master);
 
 module.exports = router;

@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
         type: Date,
     },
     masterid: {
-        type: String,
+        type: Array,
         unique: true,
     }
 });

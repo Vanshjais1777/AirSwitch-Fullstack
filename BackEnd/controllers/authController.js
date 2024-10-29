@@ -33,7 +33,7 @@ exports.signup = async (req, res) => {
             throw new Error("JWT secret not defined");
         }
 
-        const token = jwt.sign({ email: newUser.email }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: newUser._id, email: newUser.email }, JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({
             message: 'User registered successfully',
@@ -67,7 +67,7 @@ exports.login = async (req, res) => {
         }
 
         // Create JWT token
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
 
         res.json({
             token,
@@ -150,7 +150,7 @@ exports.resetPassword = async (req, res) => {
 // Add Master to Master page by user, controller logic
 // Add Master to Master page by user, controller logic
 exports.addMaster = async (req, res) => {
-    const { id, name } = req.body; // Extract only id and name from request body
+    const { masterid, name } = req.body; // Extract only id and name from request body
     const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
 
     if (!token) {
@@ -159,13 +159,17 @@ exports.addMaster = async (req, res) => {
 
     try {
         // Verify and decode the token
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET, (err, decoded) => {
+            if (err) {
+                console.log("error " + err);
+                return "Error";
+            }
+            return decoded;
+        });
         const email = decoded.email; // Get the email from the decoded token
 
-        console.log("Request Body:", req.body);
-
         // Check if the master with the entered ID exists
-        let master = await Master.findOne({ id });
+        let master = await Master.findOne({ masterid });
 
         if (!master) {
             return res.status(400).json({
@@ -177,13 +181,13 @@ exports.addMaster = async (req, res) => {
         master.name = name;
         await master.save();
 
-        // Update the user masterId in user model
+        // Update the user masterid in user model
         let user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        user.masterid = id;
+        user.masterid = [...user.masterid, masterid];
         await user.save();
 
         return res.status(200).json({
@@ -200,18 +204,18 @@ exports.addMaster = async (req, res) => {
 
 // Register Master in DataBase by admin, controller logic
 exports.registerMaster = async (req, res) => {
-    const { id } = req.body;
+    const { masterid } = req.body;
 
     try {
         // Check for existing master
-        const existingMaster = await Master.findOne({ id });
+        const existingMaster = await Master.findOne({ masterid });
         if (existingMaster) {
             return res.status(400).json({ message: "Master already exists with entered ID" });
         }
 
         // Create a new master
         const master = new Master({
-            id,
+            masterid,
         });
 
         await master.save();
@@ -220,3 +224,44 @@ exports.registerMaster = async (req, res) => {
         res.status(500).json({ message: 'Error adding master', error: error.message });
     }
 };
+
+exports.fetch_master = async (req, res) => {
+
+    //fetching master
+    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        // Verify and decode the token
+        const decoded = jwt.verify(token, JWT_SECRET, (err, decoded) => {
+            if (err) {
+                console.log("error " + err);
+                return "Error";
+            }
+            return decoded;
+        });
+
+        const email = decoded.email; // Get the email from the decoded token
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let masters = await Promise.all(user.masterid.map(async (id) => {
+            const master = await Master.findOne({ masterid: id });
+            return master ? { name: master.name, masterid: master.masterid } : null; // Return null if master is not found
+        }));
+        console.log(masters);
+
+        // Filter out any `null` values in case some `masterid`s don't have corresponding Master records
+        masters = masters.filter(master => master !== null);
+        return res.status(200).json(masters);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "server error" });
+    }
+}

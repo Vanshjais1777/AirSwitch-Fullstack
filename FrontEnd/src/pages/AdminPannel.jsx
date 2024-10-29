@@ -13,7 +13,7 @@ const AdminPannel = () => {
             const response = await fetch('http://localhost:5000/api/auth/register-master', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: masterId })  // Make sure to match the field with the backend API
+                body: JSON.stringify({ masterid: masterId })  // Make sure to match the field with the backend API
             });
 
             const result = await response.json();

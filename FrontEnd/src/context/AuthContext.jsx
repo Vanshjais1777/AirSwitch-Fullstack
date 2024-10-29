@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [isFirstTime, setIsFirstTime] = useState(() => {
-    const storedFirstTime = localStorage.getItem('isFirstTime');
+    const storedFirstTime = sessionStorage.getItem('isFirstTime');
     return storedFirstTime === null ? true : storedFirstTime === 'true';
   })
 
@@ -20,9 +20,10 @@ export const AuthProvider = ({ children }) => {
     // Remove other necessary items if needed
   };
 
-  const handleLogin = () => {
+  const handleLogin = (token) => {
     setIsLoggedIn(true);
     localStorage.setItem('userSignedUp', 'true');
+    localStorage.setItem('token', token);
   };
   useEffect(() => {
     const loggedInStatus = localStorage.getItem('isLoggedIn');

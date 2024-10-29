@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const masterSchema = new mongoose.Schema({
-    id: {
+    masterid: {
         type: String,
         required: true,
         unique: true,
