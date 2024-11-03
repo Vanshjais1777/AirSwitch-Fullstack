@@ -12,7 +12,7 @@ connectDB();
 app.use(express.json());
 
 app.use(cors({
-  origin: ['http://localhost:5173'], // local frontend and admin frontend origins
+  origin: ['http://localhost:5173', 'https://airswitch-fullstack-frontend.onrender.com/masters'], // local frontend and admin frontend origins
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'token'],
   credentials: true,
