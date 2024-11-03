@@ -10,6 +10,7 @@ const SignUp = () => {
     const [errors, setErrors] = useState({});
     const { setIsFirstTime, handleLogin } = useContext(AuthContext); // Use handleLogin from AuthContext to handle login
     const navigate = useNavigate();
+    const { backendUrl } = useContext(AuthContext);
 
     // Form validation logic
     const validateForm = () => {

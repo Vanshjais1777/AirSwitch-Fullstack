@@ -8,6 +8,7 @@ const ForgetPassword = () => {
     const [otp, setOtp] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
+    const { backendUrl } = useContext(AuthContext);
 
     const handleSendOtp = async () => {
         try {

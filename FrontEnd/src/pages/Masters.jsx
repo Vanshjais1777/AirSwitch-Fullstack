@@ -13,7 +13,8 @@ const Masters = () => {
     const [message, setMessage] = useState('');
     const { isLoggedIn } = useContext(AuthContext);
     const navigate = useNavigate();
-
+    const { backendUrl } = useContext(AuthContext);
+    
     const showMaster = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from local storage
         const response = await fetch(backendUrl + '/api/auth/fetch-master', {

@@ -9,6 +9,7 @@ const AdminPannel = () => {
     const [message, setMessage] = useState('');
     const [adminCodeInput, setAdminCodeInput] = useState('');
     const [adminAccess, setAdminAccess] = useState(false); // State to manage access
+    const { backendUrl } = useContext(AuthContext);
 
     const handleAdminCodeSubmit = (e) => {
         e.preventDefault();
