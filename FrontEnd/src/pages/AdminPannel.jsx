@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { ImCross } from "react-icons/im";
 import HamburgerMenu from '../components/HamburgerMenu';
 import { AuthContext } from '../context/AuthContext';

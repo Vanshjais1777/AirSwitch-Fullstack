@@ -8,9 +8,8 @@ const SignUp = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
-    const { setIsFirstTime, handleLogin } = useContext(AuthContext); // Use handleLogin from AuthContext to handle login
+    const { setIsFirstTime, handleLogin, backendUrl } = useContext(AuthContext); // Use handleLogin from AuthContext to handle login
     const navigate = useNavigate();
-    const { backendUrl } = useContext(AuthContext);
 
     // Form validation logic
     const validateForm = () => {
