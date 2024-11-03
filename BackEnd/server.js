@@ -2,27 +2,31 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const cors = require('cors');
+const connectDB = require('./config/db')
 require('dotenv').config();
 
 const app = express();
+const port = process.env.PORT || 5000;
+connectDB();
+
 app.use(express.json());
 
 app.use(cors({
-    origin: ['http://localhost:5173'], // local frontend and admin frontend origins
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'token'],
-    credentials: true,
-  }));
-  
-  app.options('*', cors());
+  origin: ['http://localhost:5173'], // local frontend and admin frontend origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'token'],
+  credentials: true,
+}));
 
-const connectDB = require('./config/db')
-connectDB();
+app.options('*', cors());
 
 app.use('/api/auth', authRoutes);
 
-const PORT = process.env.PORT || 5000;
+app.get("/", (req, res) => {
+  res.send("API Working");
+});
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+
+app.listen(port, () => {
+  console.log(`Server running on PORT ${port}`);
 });
