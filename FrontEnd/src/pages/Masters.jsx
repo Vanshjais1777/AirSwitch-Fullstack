@@ -16,7 +16,7 @@ const Masters = () => {
 
     const showMaster = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from local storage
-        const response = await fetch('http://localhost:5000/api/auth/fetch-master', {
+        const response = await fetch(backendUrl + '/api/auth/fetch-master', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -27,12 +27,7 @@ const Masters = () => {
         const result = await response.json();
         setMasters([...masters, ...result]);
     }
-    // if (isLoggedIn == false) {
-    //     navigate('/unauthorized');
-    // }
-    // else if (isLoggedIn == true) {
-    //     navigate('/masters');
-    // }
+
     const goToLogin = () => {
         navigate('/login');
     };
@@ -52,7 +47,7 @@ const Masters = () => {
         const token = localStorage.getItem('token'); // Retrieve the token from local storage
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/add-master', {
+            const response = await fetch(backendUrl + '/api/auth/add-master', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

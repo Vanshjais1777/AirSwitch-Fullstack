@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -7,7 +8,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
+    const { backendUrl } = useContext(AuthContext);
     useEffect(() => {
         const checkLoginStatus = localStorage.getItem('isLoggedIn');
         if (checkLoginStatus === 'true') {
@@ -21,7 +22,7 @@ const Login = () => {
         setError(''); // Reset any previous errors
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/login', {
+            const response = await fetch(backendUrl + '/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

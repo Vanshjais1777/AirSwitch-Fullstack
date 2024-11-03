@@ -3,6 +3,7 @@ import { createContext, useState, useEffect } from 'react';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const userSignedUp = localStorage.getItem('userSignedUp');
     return userSignedUp; // Return true if the user is already signed up
@@ -32,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, setIsLoggedIn, handleLogin, handleLogout, isFirstTime, setIsFirstTime }}
+      value={{ isLoggedIn, setIsLoggedIn, handleLogin, handleLogout, isFirstTime, setIsFirstTime, backendUrl }}
     >
       {children}
     </AuthContext.Provider>

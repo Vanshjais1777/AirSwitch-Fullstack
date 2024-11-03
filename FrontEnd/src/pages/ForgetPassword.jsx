@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { AuthContext } from '../context/AuthContext';
 
 const ForgetPassword = () => {
 
@@ -11,7 +12,7 @@ const ForgetPassword = () => {
     const handleSendOtp = async () => {
         try {
             // Call backend to send OTP
-            const response = await fetch("http://localhost:5000/api/auth/send-otp", {
+            const response = await fetch(backendUrl + "/api/auth/send-otp", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ImCross } from "react-icons/im";
 import HamburgerMenu from '../components/HamburgerMenu';
+import { AuthContext } from '../context/AuthContext';
 
 const AdminPannel = () => {
     const [isModalOpen, setIsModalOpen] = useState(true); // Initial modal for admin code
@@ -24,7 +25,7 @@ const AdminPannel = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/register-master', {
+            const response = await fetch(backendUrl + '/api/auth/register-master', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ masterid: masterId })
